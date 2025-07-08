@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSH Honeypot Write-Up</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
+  <style>
+    body {
+      background-color: #000c1f;
+      color: #00c2ff;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 2.5rem;
+      line-height: 1.7;
+    }
+    h1, h2 {
+      color: #00e1ff;
+    }
+    .section {
+      border-left: 4px solid #00e1ff;
+      margin: 3rem 0;
+      padding: 2rem;
+      background-color: rgba(0, 193, 255, 0.08);
+      box-shadow: 0 0 20px #00c2ff;
+      border-radius: 10px;
+    }
+    pre {
+      background: rgba(0,0,0,0.4);
+      padding: 1rem;
+      overflow-x: auto;
+      color: #00ffee;
+      border-left: 4px solid #00e1ff;
+      border-radius: 4px;
+    }
+    footer {
+      margin-top: 5rem;
+      font-size: 0.95rem;
+      color: #007ba7;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SSH Honeypot Lab with Cowrie and Hydra</h1>
+  </header>
+
+  <section class="section">
+    <h2>Introduction</h2>
+    <p>In a landscape where attackers continuously evolve and probe networks for misconfigurations and weak credentials, defenders must stay one step ahead—not just with tools, but with mindset. This project was born from a simple premise: if we can simulate an attacker in a controlled environment, we can learn to detect and respond to them more effectively in the real world.</p>
+
+    <p>This lab features a two-machine setup: one Linux Mint VM running <strong>Cowrie</strong>, a powerful SSH honeypot that simulates a real shell environment; and a Kali Linux VM using <strong>Hydra</strong> to simulate brute-force login attempts. By combining these perspectives, we create a safe environment to study attacker behavior and log fidelity.</p>
+
+    <p>Cowrie logs every detail—connection attempts, used credentials, commands issued, and session flow—making it an ideal tool for studying threat activity without risking production systems. Meanwhile, Hydra reveals just how quickly and efficiently weak login combinations can be exploited when protections are absent or misconfigured.</p>
+
+    <p>But this wasn’t just a copy-paste deployment. I configured, broke, fixed, and fine-tuned every piece. This lab helped me sharpen both my offensive intuition and defensive insight, and reminded me that the best way to understand security is to build and observe it firsthand.</p>
+  </section>
+
+  <section class="section">
+    <h2>Linux Mint Honeypot Configuration</h2>
+    <p>The Linux Mint machine (<code>192.168.7.199</code>) is prepared to run Cowrie with the following steps:</p>
+
+    <pre>sudo apt update && sudo apt upgrade -y
+sudo apt install git python3-venv -y</pre>
+
+    <p>Create a new working directory and clone Cowrie:</p>
+    <pre>mkdir cowrie && cd cowrie
+git clone https://github.com/cowrie/cowrie .</pre>
+
+    <p>Set up and activate a virtual Python environment:</p>
+    <pre>python3 -m venv cowrie-env
+source cowrie-env/bin/activate</pre>
+
+    <p>Install dependencies:</p>
+    <pre>pip install --upgrade pip
+pip install -r requirements.txt</pre>
+
+    <p>Configure Cowrie:</p>
+    <pre>cp etc/cowrie.cfg.dist etc/cowrie.cfg
+nano etc/cowrie.cfg</pre>
+
+    <p>Redirect incoming port 22 traffic to Cowrie’s port 2222:</p>
+    <pre>sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
+sudo iptables-save</pre>
+
+    <p>Start and check the honeypot service:</p>
+    <pre>bin/cowrie start
+bin/cowrie status</pre>
+
+    <p>Monitor live logs:</p>
+    <pre>tail -f var/log/cowrie/cowrie.log</pre>
+  </section>
+
+  <section class="section">
+    <h2>Kali Linux Attack Simulation with Hydra</h2>
+    <p>Hydra is used on Kali to perform brute-force attacks on Cowrie:</p>
+
+    <pre>hydra -h</pre>
+
+    <p>List common wordlists:</p>
+    <pre>ls -al /usr/share/wordlists/</pre>
+
+    <p>Attack using a known username:</p>
+    <pre>hydra -l admin -P /usr/share/wordlists/rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
+
+    <p>Attack using unknown usernames:</p>
+    <pre>hydra -L /usr/share/wordlists/rockyou.txt -P /usr/share/wordlists/top-passwords-shortlist.txt -t 4 -f ssh://192.168.7.199</pre>
+
+    <p>Cowrie logs all attempts, giving full visibility into attacker methods and brute-force timing. These logs include IP, user/pass combinations, and interactive commands entered by the attacker.</p>
+  </section>
+
+  <section class="section">
+    <h2>Final Thoughts & Reflections</h2>
+    <p>This exercise brought to life the duality of red and blue team thinking. As I watched Hydra hammer Cowrie, I realized how quickly bad actors can find a way in—if given the opportunity. But more importantly, I saw how honeypots can serve as an early warning system, a data goldmine, and a training ground for detection strategies.</p>
+
+    <p>One helpful configuration tip: Cowrie accepts fake credentials listed in:</p>
+    <pre>cowrie/etc/userdb.txt</pre>
+    <p>This defines "valid" credentials attackers can use to gain access. Tuning this file helps simulate realistic login behavior that makes the honeypot appear more convincing.</p>
+
+    <p>Personally, this project gave me more than just logs—it gave me perspective. It showed me how security is both about defense and observation. I now see SSH not just as a secure protocol, but as an attack surface rich with signals. I learned how to read those signals, how to record them, and how to think critically about what they mean.</p>
+
+    <p>What I built was simple. But what I learned was powerful: every alert starts with a packet. Every log tells a story. And every story teaches you something—if you’re paying attention.</p>
+  </section>
+
+<p>Thank you for reading!</p>
+  
+  <footer>
+    <p>© 2025 Del Risco Technologies</p>
+  </footer>
+</body>
+</html>
