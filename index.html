@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
   <title>SSH Honeypot Write-Up</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap">
   <style>
@@ -60,7 +62,7 @@
     <h2>Linux Mint Honeypot Configuration</h2>
     <p>The Linux Mint machine (<code>192.168.7.199</code>) is prepared to run Cowrie with the following steps:</p>
 
-    <pre>sudo apt update && sudo apt upgrade -y
+    <pre>sudo apt update &amp;&amp; sudo apt upgrade -y
 sudo apt install python3-pip python3-venv libssl-dev libffi-dev build-essential libpython3-dev authbind -y</pre>
 
     <p>Run Cowrie from a dedicated, non-root account:</p>
@@ -68,15 +70,17 @@ sudo apt install python3-pip python3-venv libssl-dev libffi-dev build-essential 
 sudo -iu cowrie</pre>
 
     <p>Create a self-contained state directory and activate its virtual environment:</p>
-    <pre>mkdir ~/my-honeypot && cd ~/my-honeypot
+    <pre>mkdir ~/my-honeypot &amp;&amp; cd ~/my-honeypot
 python3 -m venv cowrie-env
 source cowrie-env/bin/activate</pre>
 
-    <p>Install and initialize the current Cowrie package:</p>
+    <p>Install and initialize the reviewed Cowrie release:</p>
     <pre>python -m pip install --upgrade pip
-python -m pip install cowrie
+python -m pip install "cowrie==3.0.0"
 cowrie init
 nano etc/cowrie.cfg</pre>
+
+    <p><strong>Safety boundary:</strong> keep the honeypot on an isolated lab network, run it as the dedicated non-root account shown above, and never store real credentials in <code>etc/userdb.txt</code>.</p>
 
     <p>Exit the Cowrie account, then redirect incoming port 22 traffic to Cowrie’s port 2222 from an administrator account. Move the real SSH service to another port first so you do not lock yourself out:</p>
     <pre>exit
@@ -114,7 +118,7 @@ cowrie status</pre>
   </section>
 
   <section class="section">
-    <h2>Final Thoughts & Reflections</h2>
+    <h2>Final Thoughts &amp; Reflections</h2>
     <p>This exercise brought to life the duality of red and blue team thinking. As I watched Hydra hammer Cowrie, I realized how quickly bad actors can find a way in—if given the opportunity. But more importantly, I saw how honeypots can serve as an early warning system, a data goldmine, and a training ground for detection strategies.</p>
 
     <p>One helpful configuration tip: Cowrie accepts fake credentials listed in:</p>
@@ -127,7 +131,7 @@ cowrie status</pre>
   </section>
 
 <p>Thank you for reading!</p>
-  
+
   <footer>
     <p>© 2025 Del Risco Technologies</p>
   </footer>
