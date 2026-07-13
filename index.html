@@ -61,31 +61,35 @@
     <p>The Linux Mint machine (<code>192.168.7.199</code>) is prepared to run Cowrie with the following steps:</p>
 
     <pre>sudo apt update && sudo apt upgrade -y
-sudo apt install git python3-venv -y</pre>
+sudo apt install python3-pip python3-venv libssl-dev libffi-dev build-essential libpython3-dev authbind -y</pre>
 
-    <p>Create a new working directory and clone Cowrie:</p>
-    <pre>mkdir cowrie && cd cowrie
-git clone https://github.com/cowrie/cowrie .</pre>
+    <p>Run Cowrie from a dedicated, non-root account:</p>
+    <pre>sudo adduser --disabled-password cowrie
+sudo -iu cowrie</pre>
 
-    <p>Set up and activate a virtual Python environment:</p>
-    <pre>python3 -m venv cowrie-env
+    <p>Create a self-contained state directory and activate its virtual environment:</p>
+    <pre>mkdir ~/my-honeypot && cd ~/my-honeypot
+python3 -m venv cowrie-env
 source cowrie-env/bin/activate</pre>
 
-    <p>Install dependencies:</p>
-    <pre>pip install --upgrade pip
-pip install -r requirements.txt</pre>
-
-    <p>Configure Cowrie:</p>
-    <pre>cp etc/cowrie.cfg.dist etc/cowrie.cfg
+    <p>Install and initialize the current Cowrie package:</p>
+    <pre>python -m pip install --upgrade pip
+python -m pip install cowrie
+cowrie init
 nano etc/cowrie.cfg</pre>
 
-    <p>Redirect incoming port 22 traffic to Cowrie’s port 2222:</p>
-    <pre>sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
-sudo iptables-save</pre>
+    <p>Exit the Cowrie account, then redirect incoming port 22 traffic to Cowrie’s port 2222 from an administrator account. Move the real SSH service to another port first so you do not lock yourself out:</p>
+    <pre>exit
+sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
+sudo apt install iptables-persistent -y
+sudo netfilter-persistent save</pre>
 
-    <p>Start and check the honeypot service:</p>
-    <pre>bin/cowrie start
-bin/cowrie status</pre>
+    <p>Return to the Cowrie account, activate the environment, and start the honeypot:</p>
+    <pre>sudo -iu cowrie
+cd ~/my-honeypot
+source cowrie-env/bin/activate
+cowrie start
+cowrie status</pre>
 
     <p>Monitor live logs:</p>
     <pre>tail -f var/log/cowrie/cowrie.log</pre>
@@ -114,7 +118,7 @@ bin/cowrie status</pre>
     <p>This exercise brought to life the duality of red and blue team thinking. As I watched Hydra hammer Cowrie, I realized how quickly bad actors can find a way in—if given the opportunity. But more importantly, I saw how honeypots can serve as an early warning system, a data goldmine, and a training ground for detection strategies.</p>
 
     <p>One helpful configuration tip: Cowrie accepts fake credentials listed in:</p>
-    <pre>cowrie/etc/userdb.txt</pre>
+    <pre>etc/userdb.txt</pre>
     <p>This defines "valid" credentials attackers can use to gain access. Tuning this file helps simulate realistic login behavior that makes the honeypot appear more convincing.</p>
 
     <p>Personally, this project gave me more than just logs—it gave me perspective. It showed me how security is both about defense and observation. I now see SSH not just as a secure protocol, but as an attack surface rich with signals. I learned how to read those signals, how to record them, and how to think critically about what they mean.</p>
