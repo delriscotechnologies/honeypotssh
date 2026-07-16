@@ -14,7 +14,7 @@
 
 ---
 
-HoneypotSSH documents a controlled two-machine lab: Linux Mint runs [Cowrie](https://github.com/delriscotechnologies/cowrie) as a deceptive SSH service, while Kali Linux generates authorized login attempts with Hydra. Del Risco Technologies maintains a native GitHub fork that preserves the upstream Cowrie history, attribution, and update path.
+HoneypotSSH documents a controlled two-machine lab: Linux Mint runs [Cowrie](https://github.com/cowrie/cowrie) as a deceptive SSH service, while Kali Linux generates authorized login attempts with Hydra. This repository contains the lab write-up and operator guidance; Cowrie remains an independent upstream dependency.
 
 Cowrie accepts connections into an emulated Linux environment and records authentication attempts, commands, session activity, and file transfers. The visitor interacts with the decoy, not with a real shell on the Linux Mint host.
 
@@ -22,7 +22,7 @@ Cowrie accepts connections into an emulated Linux environment and records authen
 
 ## Quick Start
 
-The complete walkthrough is available in the [HTML lab write-up](index.html). The commands below summarize the reviewed Cowrie 3.0.0 installation used by the project.
+The complete walkthrough is available in the [HTML lab write-up](index.html). The commands below install Cowrie from its official Python package without copying its source into this repository.
 
 On the Linux Mint honeypot, install the system dependencies and create a dedicated non-root account:
 
@@ -33,7 +33,7 @@ sudo adduser --disabled-password cowrie
 sudo -iu cowrie
 ```
 
-Create a self-contained state directory, install the pinned Cowrie release, and initialize it:
+Create a self-contained state directory, install Cowrie, and initialize it:
 
 ```bash
 mkdir ~/my-honeypot
@@ -41,7 +41,7 @@ cd ~/my-honeypot
 python3 -m venv cowrie-env
 source cowrie-env/bin/activate
 python -m pip install --upgrade pip
-python -m pip install "cowrie==3.0.0"
+python -m pip install cowrie
 cowrie init
 cowrie start
 cowrie status
@@ -103,46 +103,21 @@ Linux Mint
 
 The lab intentionally makes the SSH decoy appear permissive. The security boundary is that Cowrie runs from its own state directory under a dedicated non-root account and the real host does not expose credentials or a production shell to the visitor.
 
-## Optional Port 22 Exposure
-
-Port `22` attracts more representative SSH traffic, but changing it can conflict with the host's real SSH service or lock out an administrator. First move and verify the administrative SSH service, then redirect incoming lab traffic to Cowrie:
-
-```bash
-sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
-sudo apt install -y iptables-persistent
-sudo netfilter-persistent save
-```
-
-Test administrative access before ending the existing session. Keep the honeypot on a dedicated host-only network, VLAN, or cloud subnet with no route to trusted systems.
-
-## Authorized Attack Simulation
-
-Hydra is optional. Use small synthetic lists first so the resulting evidence remains understandable and bounded:
-
-```bash
-printf 'admin\nroot\n' > users-lab.txt
-printf 'password\n123456\nhoneypot\n' > passwords-lab.txt
-hydra -L users-lab.txt -P passwords-lab.txt -t 4 -f ssh://192.168.7.199:2222
-```
-
-Delete the synthetic lists after the exercise. Never point Hydra at an address you do not own or have explicit permission to test.
-
 ## Scope and Safeguards
 
 - Cowrie runs from a dedicated non-root Linux account.
-- The documented dependency is pinned to Cowrie 3.0.0.
-- The default lab begins on high port `2222`; port `22` exposure is optional.
+- Cowrie is installed from its official package and is not redistributed in this repository.
+- The documented lab uses Cowrie's default high port, `2222/tcp`.
 - The decoy should be isolated from production networks and administrative services.
 - Real credentials must never appear in Cowrie's user database, fake filesystem, or banners.
 - Logs, TTY recordings, host keys, and captured files must stay outside the public repository.
 - Resource usage, disk growth, log rotation, firewall rules, and evidence retention remain operator responsibilities.
 - The HTML write-up is documentation; it does not install or run Cowrie automatically.
 
-Cowrie is an independent BSD-3-Clause project maintained upstream. The Del Risco Technologies repository is a fork; HoneypotSSH is a lab write-up and operator guide, not an official Cowrie distribution.
+Cowrie is an independent BSD-3-Clause project maintained upstream. HoneypotSSH references Cowrie but does not redistribute its source and is not an official Cowrie distribution.
 
 ## References
 
 - [Cowrie documentation](https://docs.cowrie.org/en/stable/)
-- [Del Risco Technologies Cowrie fork](https://github.com/delriscotechnologies/cowrie)
 - [Upstream Cowrie repository](https://github.com/cowrie/cowrie)
 - [Hydra source repository](https://github.com/vanhauser-thc/thc-hydra)
