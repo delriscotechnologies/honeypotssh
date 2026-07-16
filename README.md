@@ -6,7 +6,6 @@
 
 <p align="center">
   <a href="#how-it-works">Architecture</a> |
-  <a href="#scope-and-safeguards">Safeguards</a> |
   <a href="https://delriscotechnologies.github.io/honeypotssh/">Full Write-Up</a>
 </p>
 
@@ -37,17 +36,6 @@ Linux Mint
 ```
 
 The lab intentionally makes the SSH decoy appear permissive. The security boundary is that Cowrie runs from its own state directory under a dedicated non-root account and the real host does not expose credentials or a production shell to the visitor.
-
-## Scope and Safeguards
-
-- Cowrie runs from a dedicated non-root Linux account.
-- Cowrie is installed from its official package and is not redistributed in this repository.
-- The documented lab uses Cowrie's default high port, `2222/tcp`.
-- The decoy should be isolated from production networks and administrative services.
-- Real credentials must never appear in Cowrie's user database, fake filesystem, or banners.
-- Logs, TTY recordings, host keys, and captured files must stay outside the public repository.
-- Resource usage, disk growth, log rotation, firewall rules, and evidence retention remain operator responsibilities.
-- The HTML write-up is documentation; it does not install or run Cowrie automatically.
 
 Cowrie is an independent BSD-3-Clause project maintained upstream. HoneypotSSH references Cowrie but does not redistribute its source and is not an official Cowrie distribution.
 
