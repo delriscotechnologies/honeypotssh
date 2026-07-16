@@ -120,4 +120,3 @@ Cowrie is an independent BSD-3-Clause project maintained upstream. HoneypotSSH r
 
 - [Cowrie documentation](https://docs.cowrie.org/en/stable/)
 - [Upstream Cowrie repository](https://github.com/cowrie/cowrie)
-- [Hydra source repository](https://github.com/vanhauser-thc/thc-hydra)
