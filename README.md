@@ -5,7 +5,6 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick Start</a> |
   <a href="#what-you-observe">Evidence</a> |
   <a href="#how-it-works">Architecture</a> |
   <a href="#scope-and-safeguards">Safeguards</a> |
@@ -19,46 +18,6 @@ HoneypotSSH documents a controlled two-machine lab: Linux Mint runs [Cowrie](htt
 Cowrie accepts connections into an emulated Linux environment and records authentication attempts, commands, session activity, and file transfers. The visitor interacts with the decoy, not with a real shell on the Linux Mint host.
 
 > Run this lab only on systems and networks you own or are explicitly authorized to test. Honeypot logs can contain attempted credentials, source addresses, commands, session recordings, and hostile files; never commit real evidence to a public repository.
-
-## Quick Start
-
-The complete walkthrough is available in the [HTML lab write-up](index.html). The commands below install Cowrie from its official Python package without copying its source into this repository.
-
-On the Linux Mint honeypot, install the system dependencies and create a dedicated non-root account:
-
-```bash
-sudo apt update
-sudo apt install -y python3-pip python3-venv libssl-dev libffi-dev build-essential libpython3-dev authbind
-sudo adduser --disabled-password cowrie
-sudo -iu cowrie
-```
-
-Create a self-contained state directory, install Cowrie, and initialize it:
-
-```bash
-mkdir ~/my-honeypot
-cd ~/my-honeypot
-python3 -m venv cowrie-env
-source cowrie-env/bin/activate
-python -m pip install --upgrade pip
-python -m pip install cowrie
-cowrie init
-cowrie start
-cowrie status
-```
-
-Cowrie listens on `2222/tcp` by default. From the Kali VM, replace the example address with the Linux Mint lab address:
-
-```bash
-ssh -p 2222 root@192.168.7.199
-```
-
-Follow the live diagnostic log on Linux Mint:
-
-```bash
-cd ~/my-honeypot
-tail -f var/log/cowrie/cowrie.log
-```
 
 ## What You Observe
 
