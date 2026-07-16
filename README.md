@@ -5,7 +5,6 @@
 </p>
 
 <p align="center">
-  <a href="#what-you-observe">Evidence</a> |
   <a href="#how-it-works">Architecture</a> |
   <a href="#scope-and-safeguards">Safeguards</a> |
   <a href="index.html">Full Write-Up</a>
@@ -18,29 +17,6 @@ HoneypotSSH documents a controlled two-machine lab: Linux Mint runs [Cowrie](htt
 Cowrie accepts connections into an emulated Linux environment and records authentication attempts, commands, session activity, and file transfers. The visitor interacts with the decoy, not with a real shell on the Linux Mint host.
 
 > Run this lab only on systems and networks you own or are explicitly authorized to test. Honeypot logs can contain attempted credentials, source addresses, commands, session recordings, and hostile files; never commit real evidence to a public repository.
-
-## What You Observe
-
-Cowrie turns an SSH connection into evidence without granting access to the host operating system.
-
-| Evidence | What it shows |
-| --- | --- |
-| Authentication events | Source address and attempted username/password pairs |
-| Command events | Commands entered in the emulated shell |
-| Session recordings | Connection flow and replayable terminal activity |
-| File activity | SFTP, SCP, and attempted downloads |
-| JSON events | Structured records for analysis or SIEM ingestion |
-
-The primary files are stored under the Cowrie state directory:
-
-```text
-var/log/cowrie/cowrie.log
-var/log/cowrie/cowrie.json
-var/lib/cowrie/tty/
-var/lib/cowrie/downloads/
-```
-
-Treat downloaded artifacts as malware. Hash and inspect them only in a separate analysis environment, restrict access to the evidence, redact sensitive values before sharing, and apply an explicit retention period.
 
 ## How It Works
 
