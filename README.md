@@ -7,7 +7,7 @@
 <p align="center">
   <a href="#how-it-works">Architecture</a> |
   <a href="#scope-and-safeguards">Safeguards</a> |
-  <a href="index.html">Full Write-Up</a>
+  <a href="https://delriscotechnologies.github.io/honeypotssh/">Full Write-Up</a>
 </p>
 
 ---
