@@ -97,11 +97,11 @@ source cowrie-env/bin/activate</pre>
 
     <p>Install and initialize the reviewed Cowrie release:</p>
     <pre>python -m pip install --upgrade pip
-python -m pip install "cowrie==3.0.6"
+python -m pip install "cowrie==3.0.0"
 cowrie init
 nano etc/cowrie.cfg</pre>
 
-    <p><strong>Version note:</strong> this write-up pins Cowrie 3.0.6, the reviewed release used for these instructions. Before exposing a honeypot, check the <a href="https://github.com/cowrie/cowrie/releases">official Cowrie releases</a>, review changes, and update the pin intentionally when a newer security or stability release is available.</p>
+    <p><strong>Version note:</strong> this write-up pins Cowrie 3.0.0, the latest release currently published on PyPI. Cowrie has newer GitHub tags; use one only after switching to the upstream source-install workflow and testing it intentionally.</p>
 
     <p><strong>Safety boundary:</strong> keep the honeypot on an isolated lab network, run it as the dedicated non-root account shown above, and never store real credentials in <code>etc/userdb.txt</code>.</p>
 
