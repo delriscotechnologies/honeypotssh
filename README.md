@@ -10,7 +10,7 @@
 
 ---
 
-HoneypotSSH documents a controlled two-machine lab: Linux Mint runs Cowrie as a deceptive SSH service, while Kali Linux generates authorized login attempts with Hydra. This repository contains the lab write-up and operator guidance; Cowrie remains an independent upstream dependency.
+HoneypotSSH documents a controlled two-machine lab: Linux Mint runs Cowrie as a deceptive SSH service, while Kali Linux generates authorized login attempts with Hydra. The linked walkthrough pins Cowrie 3.0.13 as a reviewed snapshot; check upstream release notes before changing that version.
 
 Cowrie accepts connections into an emulated Linux environment and records authentication attempts, commands, session activity, and file transfers. The visitor interacts with the decoy, not with a real shell on the Linux Mint host.
 
@@ -21,3 +21,4 @@ Cowrie is an independent BSD-3-Clause project maintained upstream. HoneypotSSH r
 ## References
 
 - [Upstream Cowrie repository](https://github.com/cowrie/cowrie)
+- [Cowrie installation guide](https://docs.cowrie.org/en/latest/INSTALL.html)
