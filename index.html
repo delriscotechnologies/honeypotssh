@@ -74,7 +74,7 @@
 
     <p>This lab features a two-machine setup: one Linux Mint VM running <strong>Cowrie</strong>, a powerful SSH honeypot that simulates a real shell environment; and a Kali Linux VM using <strong>Hydra</strong> to simulate brute-force login attempts. By combining these perspectives, we create a safe environment to study attacker behavior and log fidelity.</p>
 
-    <p>Cowrie logs every detail—connection attempts, used credentials, commands issued, and session flow—making it an ideal tool for studying threat activity without risking production systems. Meanwhile, Hydra reveals just how quickly and efficiently weak login combinations can be exploited when protections are absent or misconfigured.</p>
+    <p>Cowrie records connection attempts, credentials presented, commands, session activity, and supported file-transfer events, making it useful for studying threat activity in a controlled environment. Meanwhile, Hydra demonstrates how quickly weak login combinations can be tested when protections are absent or misconfigured.</p>
 
     <p>But this wasn’t just a copy-paste deployment. I configured, broke, fixed, and fine-tuned every piece. This lab helped me sharpen both my offensive intuition and defensive insight, and reminded me that the best way to understand security is to build and observe it firsthand.</p>
   </section>
@@ -84,7 +84,7 @@
     <p>The Linux Mint machine (<code>192.168.7.199</code>) is prepared to run Cowrie with the following steps:</p>
 
     <pre>sudo apt update &amp;&amp; sudo apt upgrade -y
-sudo apt install python3-pip python3-venv libssl-dev libffi-dev build-essential libpython3-dev authbind -y</pre>
+sudo apt install python3-pip python3-venv libssl-dev libffi-dev build-essential libpython3-dev -y</pre>
 
     <p>Run Cowrie from a dedicated, non-root account:</p>
     <pre>sudo adduser --disabled-password cowrie
@@ -105,9 +105,19 @@ nano etc/cowrie.cfg</pre>
 
     <p><strong>Safety boundary:</strong> keep the honeypot on an isolated lab network, run it as the dedicated non-root account shown above, and never store real credentials in <code>etc/userdb.txt</code>.</p>
 
-    <p>Exit the Cowrie account, then redirect incoming port 22 traffic to Cowrie’s port 2222 from an administrator account. Move the real SSH service to another port first so you do not lock yourself out:</p>
+    <p>Before redirecting port 22 to Cowrie, move the real administrative SSH service to a different port and verify that a second SSH session can connect successfully. The example below uses port 22222 for administration:</p>
     <pre>exit
-sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo nano /etc/ssh/sshd_config
+# Set: Port 22222
+sudo sshd -t
+sudo systemctl restart ssh</pre>
+
+    <p>From a second terminal, verify administrative SSH before continuing:</p>
+    <pre>ssh -p 22222 yourusername@192.168.7.199</pre>
+
+    <p>Only after that test succeeds, redirect incoming SSH traffic on port 22 to Cowrie on port 2222:</p>
+    <pre>sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
 sudo apt install iptables-persistent -y
 sudo netfilter-persistent save</pre>
 
