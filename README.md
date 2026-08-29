@@ -22,4 +22,3 @@ Cowrie is an independent BSD-3-Clause project maintained upstream. HoneypotSSH r
 
 - [Upstream Cowrie repository](https://github.com/cowrie/cowrie)
 - [Cowrie installation guide](https://docs.cowrie.org/en/latest/INSTALL.html)
-
