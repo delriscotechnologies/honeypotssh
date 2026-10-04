@@ -148,7 +148,9 @@ hydra -l admin -P rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
     <p>For multiple lab accounts, provide a <code>users.txt</code> file with one username per line and reuse the extracted password list:</p>
     <pre>hydra -L users.txt -P rockyou.txt -t 4 -f ssh://192.168.7.199</pre>
 
-    <p>Cowrie logs all attempts, giving full visibility into attacker methods and brute-force timing. These logs include IP, user/pass combinations, and interactive commands entered by the attacker.</p>
+    <p>Hydra generates authentication attempts, which Cowrie records with source addresses and submitted credentials. Interactive command logging requires a separate SSH session:</p>
+    <pre>ssh admin@192.168.7.199</pre>
+    <p>Sign in with disposable credentials accepted by the honeypot, run a command such as <code>whoami</code>, and review the Cowrie log.</p>
   </section>
 
   <section class="section">
